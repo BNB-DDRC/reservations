@@ -1,6 +1,8 @@
+import MYSQL_USER_PASSWORD from '../mySQL.config';
+
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('reservations', 'root', '', {
+const sequelize = new Sequelize('reservations', 'root', MYSQL_USER_PASSWORD, {
   host: 'localhost',
   dialect: 'mysql',
 });
@@ -30,7 +32,7 @@ Listing.init({
     allowNull: false,
   },
   ratings: {
-    type: Sequelize.DECIMAL(10,2),
+    type: Sequelize.DECIMAL(10, 2),
     allowNull: false,
   },
   reviews: {
