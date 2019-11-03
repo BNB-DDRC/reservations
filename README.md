@@ -49,7 +49,7 @@ At this point in time, the module dependencies should be installed, the mySQL da
 In order to view the module in action, visit the following URL:
 ```js
 // replace '#' with a number 1 - 100
-'http://localhost:3002/#/'
+'http://localhost:3002/rooms/#/'
 ```
 
 ## **API Access and Routing**
@@ -136,13 +136,13 @@ This module's API provides access to information via the following request metho
   ##### _Successful requests will receive a `201` HTTP status code._
 
 #### _CURRENT RESERVATION MODIFICATION_
-  Reservation modifications can be made via a `PUT` request to the below URL; accompanied by a data object containing the guest name, the confirmation number, and the new check-in and check-out dates of the reservation.
+  Reservation modifications can be made via a `PATCH` request to the below URL; accompanied by a data object containing the guest name, the confirmation number, and the new check-in and check-out dates of the reservation.
 
-  _Sample jQuery ajax PUT request for a reservation modification to listing #56:_
+  _Sample jQuery ajax PATCH request for a reservation modification to listing #56:_
   ```js
   $.ajax({
     url: 'http://localhost:3002/api/rooms/56/dates',
-    method: 'PUT',
+    method: 'PATCH',
     data: {
       guestName: "David J",
       confirmationNumber: 000001,
