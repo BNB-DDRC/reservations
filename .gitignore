@@ -9,3 +9,7 @@ mySQL.config.js
 
 # macOS/OSX
 .DS_Store
+
+# sample data
+database/csv base data/listings.csv
+database/csv base data/reservations.csv

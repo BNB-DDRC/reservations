@@ -1,3 +1,3 @@
 const MYSQL_USER_PASSWORD = '';
 
-export default MYSQL_USER_PASSWORD;
+module.exports = MYSQL_USER_PASSWORD;

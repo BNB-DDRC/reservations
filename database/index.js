@@ -1,6 +1,5 @@
-import MYSQL_USER_PASSWORD from '../mySQL.config';
-
 const Sequelize = require('sequelize');
+const MYSQL_USER_PASSWORD = require('../mySQL.config');
 
 const sequelize = new Sequelize('reservations', 'root', MYSQL_USER_PASSWORD, {
   host: 'localhost',
