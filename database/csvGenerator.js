@@ -4,11 +4,11 @@ const moment = require('moment');
 const { newReservation, newListing } = require('./csvRandom');
 const { loading } = require('./csvLoadBar');
 
-const listingsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings.csv'));
-const reservationsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations.csv'));
+const listingsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-2.csv'));
+const reservationsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-2.csv'));
 
 const createListings = (file, callback) => {
-  const recordCount = 10 ** 7;
+  const recordCount = 10 ** 5;
   let listingsLeft = recordCount;
   let canContinue = true;
   const writeListings = () => {
@@ -32,7 +32,7 @@ const createListings = (file, callback) => {
   writeListings();
 };
 const createReservations = (file) => {
-  const recordCount = 10 ** 7;
+  const recordCount = 10 ** 4;
   let listingsLeft = recordCount;
 
   const writeReservations = () => {
