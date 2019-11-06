@@ -1,39 +1,69 @@
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
+const { newReservation, newListing } = require('./csvRandom');
+const { loading } = require('./csvLoadBar');
 
 const listingsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings.csv'));
-
-for (let i = 0; i < 10 ** 6; i += 1) {
-  // numbers listed below are more or less arbitrary
-  // they do not correspond to anything in particular
-  const rand = Math.random();
-  const listingName = `l#${i}`;
-  const price = parseInt((i * 50 * rand).toFixed(2), 10);
-  const rating = parseInt(((rand * 6) + 3).toFixed(2), 10);
-  const reviewCount = Math.trunc(rand * 650) + 25;
-  const guestMax = Math.trunc(rand * 15) + 3;
-
-  const newListing = `${listingName},${price},${rating},${reviewCount},${guestMax}`;
-  listingsFile.write(i ? '\n'.concat(newListing) : newListing);
-}
-
-listingsFile.end();
-
 const reservationsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations.csv'));
 
-for (let i = 0; i < 10 ** 6; i += 1) {
-  // numbers listed below are more or less arbitrary
-  // they do not correspond to anything in particular
-  const rand = Math.random();
-  const listingId = `${i + 1}`;
-  const checkInDate = '19-10-10';
-  const checkOutDate = '19-10-10';
-  const guestAdultCount = Math.trunc(rand * 5) + 1;
-  const guestChildCount = Math.trunc(rand * 5);
-  const guestInfantCount = Math.trunc(rand * 3);
+const createListings = (file, callback) => {
+  const recordCount = 10 ** 5;
+  let listingsLeft = recordCount;
+  let canContinue = true;
+  const writeListings = () => {
+    do {
+      loading('Listing generation', listingsLeft, recordCount, 0.001);
+      listingsLeft -= 1;
+      const listing = newListing(recordCount - listingsLeft);
+      if (listingsLeft === 0) {
+        file.write(listing, () => file.end(() => {
+          loading('Listing generation');
+          callback();
+        }));
+      } else {
+        canContinue = file.write(listing);
+      }
+    } while ((listingsLeft > 0) && canContinue);
+    if (listingsLeft > 0) {
+      file.once('drain', writeListings);
+    }
+  };
+  writeListings();
+};
+const createReservations = (file) => {
+  const recordCount = 10 ** 5;
+  let listingsLeft = recordCount;
 
-  const newReservation = `${listingId},${checkInDate},${checkOutDate},${guestAdultCount},${guestChildCount},${guestInfantCount}`;
-  reservationsFile.write(i ? '\n'.concat(newReservation) : newReservation);
-}
+  const writeReservations = () => {
+    let canContinue = true;
+    const create9Reservations = (listingId, startDate) => {
+      const newReservationsArray = [];
+      for (let reservationsLeft = 9; reservationsLeft; reservationsLeft -= 1) {
+        newReservationsArray.push(newReservation(listingId, startDate));
+      }
+      return newReservationsArray.join('\n');
+    };
+    do {
+      loading('Reservation generation', listingsLeft, recordCount, 0.0001);
+      listingsLeft -= 1;
+      const reservationsStartDate = moment(Date.now());
+      const listingId = recordCount - listingsLeft - 1;
+      let listingReservations = create9Reservations(listingId, reservationsStartDate);
+      listingReservations = listingsLeft === recordCount - 1 ? listingReservations : '\n'.concat(listingReservations);
+      if (listingsLeft === 0) {
+        file.write(listingReservations, () => file.end(() => {
+          loading('Reservation generation');
+        }));
+      } else {
+        canContinue = file.write(listingReservations);
+      }
+    } while ((listingsLeft > 0) && canContinue);
+    if (listingsLeft > 0) {
+      file.once('drain', writeReservations);
+    }
+  };
+  writeReservations();
+};
 
-reservationsFile.end();
+createListings(listingsFile, createReservations.bind(null, reservationsFile));
