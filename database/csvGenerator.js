@@ -8,7 +8,7 @@ const listingsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data
 const reservationsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations.csv'));
 
 const createListings = (file, callback) => {
-  const recordCount = 10 ** 5;
+  const recordCount = 10 ** 7;
   let listingsLeft = recordCount;
   let canContinue = true;
   const writeListings = () => {
@@ -32,7 +32,7 @@ const createListings = (file, callback) => {
   writeListings();
 };
 const createReservations = (file) => {
-  const recordCount = 10 ** 5;
+  const recordCount = 10 ** 7;
   let listingsLeft = recordCount;
 
   const writeReservations = () => {
