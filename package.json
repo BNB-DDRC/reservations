@@ -4,7 +4,7 @@
   "description": "Reservations module for clone of an item detail page from Airbnb",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -w",
     "start": "nodemon ./server/index.js",
     "schema": "mysql -u root -p < schema.sql",
     "seed": "node ./seed.js",
