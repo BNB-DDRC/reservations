@@ -74,15 +74,11 @@ This module's API provides access to information via the following request metho
 
   ```json
   {
-    "id": "56",
-    "createdAt": "2019-10-31T04:53:25.000Z",
-    "updatedAt": "2019-10-31T04:53:25.000Z",
-    "pricePerNight": "345",
-    "ratings": "3.50",
-    "reviews": "330",
-    "serviceFee": "58",
-    "maxGuest": "10",
-    "lowerBoundGuestNum": "2"
+    "listing_id": "56",
+    "price": "35.00",
+    "rating": "7",
+    "review_count": "28",
+    "guest_max": "5"
   }
   ```
   ##### _Successful requests will receive a `202` HTTP status code._
@@ -90,29 +86,22 @@ This module's API provides access to information via the following request metho
 #### _CURRENT RESERVATION DATES_  
   Current reservation dates are available via a `GET` request to the following URL:
   ```js
-  'http://localhost:3002/api/rooms/:id/dates'
+  'http://localhost:3002/api/rooms/:id/reservations'
   ```
 
   _Sample jQuery ajax GET request for reservation dates from listing #56:_
   ```js
   $.ajax({
-    url: 'http://localhost:3002/api/rooms/56/dates',
+    url: 'http://localhost:3002/api/rooms/56/reservations',
     method: 'GET',
     });
   ```
   Requests to the above URL will be provided with a JSON object which follows the below data shape:
   ```json
   {
-    "id": "56",
-    "listingId": "",
-    "createdAt": "2019-10-31T04:53:25.000Z",
-    "updatedAt": "2019-10-31T04:53:25.000Z",
-    "october1": "true",
-    "october2": "true",
-    "october3": "false",
-    "october4": "true",
-        ︙
-    "october31": "false",
+    "listing_id": "56",
+    "check_in_date": "2019-10-29T04:53:25.000Z",
+    "check_out_date": "2019-10-31T04:53:25.000Z",
   }
   ```
   ##### _Successful requests will receive a `202` HTTP status code._
@@ -123,29 +112,30 @@ This module's API provides access to information via the following request metho
   _Sample jQuery ajax POST request for a new reservation to listing #56:_
   ```js
   $.ajax({
-    url: 'http://localhost:3002/api/rooms/56/dates',
+    url: 'http://localhost:3002/api/rooms/56/reservations',
     method: 'POST',
     data: {
-      guestName: "David J",
-      confirmationNumber: 000001,
-      checkInDate: "2019-12-29",
-      checkOutDate: "2020-01-02",
+      listing_id: 56,
+      check_in_date: "2019-12-29",
+      check_out_date: "2020-01-02",
+      guest_adult_count: 2,
+      guest_children_count: 3,
+      guest_infant_count: 2,
     }
     });
   ```
   ##### _Successful requests will receive a `201` HTTP status code._
 
 #### _CURRENT RESERVATION MODIFICATION_
-  Reservation modifications can be made via a `PATCH` request to the below URL; accompanied by a data object containing the guest name, the confirmation number, and the new check-in and check-out dates of the reservation.
+  Reservation modifications can be made via a `PATCH` request to the below URL; accompanied by a data object containing the guest name, the confirmation number, and the new information for the reservation (date(s) or guest count(s)).
 
-  _Sample jQuery ajax PATCH request for a reservation modification to listing #56:_
+  _Sample jQuery ajax PATCH request for a reservation modification to listing #56 (where guest counts are the same, but dates are changing):_
   ```js
   $.ajax({
-    url: 'http://localhost:3002/api/rooms/56/dates',
+    url: 'http://localhost:3002/api/rooms/56/reservations',
     method: 'PATCH',
     data: {
-      guestName: "David J",
-      confirmationNumber: 000001,
+      confirmationNumber: 9000,
       checkInDate: "2019-12-31",
       checkOutDate: "2020-01-01",
     }
@@ -159,11 +149,10 @@ This module's API provides access to information via the following request metho
   _Sample jQuery ajax DELETE request for a reservation cancellation to listing #56:_
   ```js
   $.ajax({
-    url: 'http://localhost:3002/api/rooms/56/dates',
+    url: 'http://localhost:3002/api/rooms/56/reservations',
     method: 'DELETE',
     data: {
-      guestName: "David J",
-      confirmationNumber: 000001,
+      confirmationNumber: 9000,
     }
   });
   ```
