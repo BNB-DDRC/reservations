@@ -11,5 +11,5 @@ mySQL.config.js
 .DS_Store
 
 # sample data
-database/csv base data/listings.csv
-database/csv base data/reservations.csv
+database/csv base data/listings-*.csv
+database/csv base data/reservations-*.csv

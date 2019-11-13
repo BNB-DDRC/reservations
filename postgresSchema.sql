@@ -12,8 +12,8 @@ CREATE TABLE listings (
   -- guest_max                     int NOT NULL,
   listing_id                    serial          PRIMARY KEY,
   listing_name                  varchar(80),
-  price                         money,
-  rating                        real,
+  price                         int,
+  rating                        int,
   review_count                  int,
   guest_max                     int
 );

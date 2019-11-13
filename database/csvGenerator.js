@@ -4,22 +4,32 @@ const moment = require('moment');
 const { newReservation, newListing } = require('./csvRandom');
 const { loading } = require('./csvLoadBar');
 
-const listingsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-2.csv'));
-const reservationsFile = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-2.csv'));
+// const listingsFileP = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-P.csv'));
+// const reservationsFileP = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-P.csv'));
+const listingsFileC = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-C.csv'));
+const reservationsFileC = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-C.csv'));
 
-const createListings = (file, callback) => {
-  const recordCount = 10 ** 5;
+// const reservationsFileC2 = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-C-2.csv'));
+
+
+const createListings = (file, options, callback = () => {}, callbackFile = null, callback2 = () => {}) => {
+  // for the options parameter
+  // 'p': postgreSQL (no primary IDs)
+  // 'c': cassandra (with primary IDs)
+  const hasPrimaryIds = options === 'c';
+  const recordCount = 10 ** 7;
   let listingsLeft = recordCount;
   let canContinue = true;
   const writeListings = () => {
     do {
       loading('Listing generation', listingsLeft, recordCount, 0.001);
       listingsLeft -= 1;
-      const listing = newListing(recordCount - listingsLeft);
+      let listing = newListing(recordCount - listingsLeft, hasPrimaryIds);
+      listing = listingsLeft === recordCount - 1 ? listing : '\n'.concat(listing);
       if (listingsLeft === 0) {
         file.write(listing, () => file.end(() => {
           loading('Listing generation');
-          callback();
+          callback(callbackFile, options, callback2);
         }));
       } else {
         canContinue = file.write(listing);
@@ -31,18 +41,28 @@ const createListings = (file, callback) => {
   };
   writeListings();
 };
-const createReservations = (file) => {
-  const recordCount = 10 ** 4;
+const createReservations = (file, options, callback = () => {}) => {
+  // for the options parameter
+  // 'p': postgreSQL (no primary IDs)
+  // 'c': cassandra (with primary IDs)
+  const hasPrimaryIds = options === 'c';
+  const recordCount = 10 ** 7;
   let listingsLeft = recordCount;
 
   const writeReservations = () => {
     let canContinue = true;
     const create9Reservations = (listingId, startDate) => {
-      const newReservationsArray = [];
+      const newReservations = [];
+      let currentDate = moment(startDate);
       for (let reservationsLeft = 9; reservationsLeft; reservationsLeft -= 1) {
-        newReservationsArray.push(newReservation(listingId, startDate));
+        const reservationInformation = (
+          newReservation(listingId, currentDate, hasPrimaryIds, 9 - reservationsLeft)
+        );
+        const [reservation, newDate] = reservationInformation;
+        newReservations.push(reservation);
+        currentDate = newDate;
       }
-      return newReservationsArray.join('\n');
+      return newReservations.join('\n');
     };
     do {
       loading('Reservation generation', listingsLeft, recordCount, 0.0001);
@@ -54,6 +74,7 @@ const createReservations = (file) => {
       if (listingsLeft === 0) {
         file.write(listingReservations, () => file.end(() => {
           loading('Reservation generation');
+          callback();
         }));
       } else {
         canContinue = file.write(listingReservations);
@@ -66,4 +87,8 @@ const createReservations = (file) => {
   writeReservations();
 };
 
-createListings(listingsFile, createReservations.bind(null, reservationsFile));
+// createListings(listingsFileP, 'p', createReservations, reservationsFileP, () => { // for postgreSQL data
+//   createListings(listingsFileC, 'c', createReservations, reservationsFileC); // for cassandra data
+// });
+
+createListings(listingsFileC, 'c', createReservations, reservationsFileC);
