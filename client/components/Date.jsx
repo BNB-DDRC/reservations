@@ -6,30 +6,34 @@ const DateDiv = styled.div`
   display: flex;
   flex-direction: column;
   font-family: 'Montserrat', sans-serif;
-  padding-top: 112px;
-`;
+  `;
 
 const DateBox = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 324px;
-  height: 40px;
-  margin-left: 24px;
-  margin-right: 24px;
+  height: min-content;
   border: 1px solid rgb(228, 231, 231);
   border-radius: 1px;
   font-size: 16px;
 `;
-
+// height for DateBox was at 40px
+// width was 324px
 const CheckInOut = styled.div`
-  display: flex;
+  display: inline;
   justify-content: flex-start;
   align-items: center;
-  width: 140px;
-  height: 40px;
+  margin: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 5px;
+  width: 100%;
+  height: max-content;
   color: rgb(143,143,143);
-  cursor: text;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 class Date extends React.Component {
@@ -41,47 +45,71 @@ class Date extends React.Component {
       checkOut: false,
     };
 
-    this.handleClickCheckIn = this.handleClickCheckIn.bind(this);
-    this.handleClickCheckOut = this.handleClickCheckOut.bind(this);
+    this.showHideCalendarCheckIn = this.showHideCalendarCheckIn.bind(this);
+    this.showHideCalendarCheckOut = this.showHideCalendarCheckOut.bind(this);
+    this.hideCalendar = this.hideCalendar.bind(this);
+    document.body.addEventListener('click', this.hideCalendar);
   }
 
-  handleClickCheckIn(event) {
-    event.preventDefault();
-    console.log('checkIN!');
+  hideCalendar({ target: { classList } }) {
+    const classListArray = [...classList];
+    // console.dir(classListArray);
+    const isClickOffCalendar = (
+      !(classListArray.includes('check-in-box')
+        || classListArray.includes('check-out-box')
+        || classListArray.includes('check-in-out-calendar'))
+    );
+    if (isClickOffCalendar) {
+      const newState = { checkIn: false, checkOut: false };
+      this.setState(newState, () => {
+        const checkInBox = document.getElementsByClassName('check-in-box')[0];
+        const checkOutBox = document.getElementsByClassName('check-out-box')[0];
+        checkInBox.setAttribute('style', 'none');
+        checkOutBox.setAttribute('style', 'none');
+      });
+    }
+  }
 
-    this.setState({
-      checkIn: true,
-      checkOut: false,
+  showHideCalendarCheckIn() {
+    const { checkIn, checkOut } = this.state;
+    const newState = { checkIn: !checkIn, checkOut };
+    if (!checkIn) newState.checkOut = checkIn;
+    this.setState(newState, () => {
+      const checkInBox = document.getElementsByClassName('check-in-box')[0];
+      const checkOutBox = document.getElementsByClassName('check-out-box')[0];
+      const newStyle = 'background-color: rgb(153,237,230); border-radius: 3px; color: rgb(45,151,159);';
+      checkInBox.setAttribute('style', !checkIn ? newStyle : 'none');
+      checkOutBox.setAttribute('style', 'none');
     });
   }
 
-  handleClickCheckOut(event) {
-    event.preventDefault();
-    console.log('checkOUT!');
-
-    this.setState({
-      checkOut: true,
-      checkIn: false,
+  showHideCalendarCheckOut() {
+    const { checkIn, checkOut } = this.state;
+    const newState = { checkIn, checkOut: !checkOut };
+    if (!checkOut) newState.checkIn = checkOut;
+    this.setState(newState, () => {
+      const checkInBox = document.getElementsByClassName('check-in-box')[0];
+      const checkOutBox = document.getElementsByClassName('check-out-box')[0];
+      const newStyle = 'background-color: rgb(153,237,230); border-radius: 3px; color: rgb(45,151,159);';
+      checkInBox.setAttribute('style', 'none');
+      checkOutBox.setAttribute('style', !checkOut ? newStyle : 'none');
     });
   }
 
   render() {
-    const { checkIn } = this.state;
+    const { checkIn, checkOut } = this.state;
 
     return (
-      <DateDiv>
-        <div style={{
-          marginLeft: '24px', fontSize: '12px', color: 'rgb(72,72,72)', fontWeight: '600',
-        }}
-        >
+      <DateDiv onClick={this.hideCalendar}>
+        <div style={{ fontSize: '12px', color: 'rgb(72,72,72)', fontWeight: '600' }}>
           Dates
         </div>
         <DateBox>
-          <CheckInOut style={{ paddingLeft: '8px' }} onClick={this.handleClickCheckIn}>Check-in</CheckInOut>
-          --&gt;
-          <CheckInOut style={{ paddingLeft: '7px' }} onClick={this.handleClickCheckOut}>Checkout</CheckInOut>
+          <CheckInOut onClick={this.showHideCalendarCheckIn} className="check-in-box">Check-in</CheckInOut>
+          ⟶
+          <CheckInOut onClick={this.showHideCalendarCheckOut} className="check-out-box">Checkout</CheckInOut>
+          {checkIn || checkOut ? <Calendar className="check-in-out-calendar" /> : <div />}
         </DateBox>
-        {checkIn ? <Calendar /> : <div />}
       </DateDiv>
     );
   }
