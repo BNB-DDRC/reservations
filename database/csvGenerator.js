@@ -4,15 +4,19 @@ const moment = require('moment');
 const { newReservation, newListing } = require('./csvRandom');
 const { loading } = require('./csvLoadBar');
 
-// const listingsFileP = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-P.csv'));
-// const reservationsFileP = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-P.csv'));
-const listingsFileC = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'listings-C.csv'));
-const reservationsFileC = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-C.csv'));
+const baseFilePath = path.resolve(__dirname, 'csv base data');
+const listingsFileP = fs.createWriteStream(path.resolve(baseFilePath, 'listings-P.csv'));
+const reservationsFileP = fs.createWriteStream(path.resolve(baseFilePath, 'reservations-P.csv'));
+// const listingsFileC = fs.createWriteStream(path.resolve(baseFilePath, 'listings-C.csv'));
+// const reservationsFileC = fs.createWriteStream(path.resolve(baseFilePath, 'reservations-C.csv'));
 
-// const reservationsFileC2 = fs.createWriteStream(path.resolve(__dirname, 'csv base data', 'reservations-C-2.csv'));
-
-
-const createListings = (file, options, callback = () => {}, callbackFile = null, callback2 = () => {}) => {
+const createListings = (
+  file,
+  options,
+  callback = () => {},
+  callbackFile = null,
+  callback2 = () => {},
+) => {
   // for the options parameter
   // 'p': postgreSQL (no primary IDs)
   // 'c': cassandra (with primary IDs)
@@ -87,8 +91,4 @@ const createReservations = (file, options, callback = () => {}) => {
   writeReservations();
 };
 
-// createListings(listingsFileP, 'p', createReservations, reservationsFileP, () => { // for postgreSQL data
-//   createListings(listingsFileC, 'c', createReservations, reservationsFileC); // for cassandra data
-// });
-
-createListings(listingsFileC, 'c', createReservations, reservationsFileC);
+createListings(listingsFileP, 'p', createReservations, reservationsFileP);
