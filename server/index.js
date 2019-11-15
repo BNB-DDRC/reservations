@@ -58,9 +58,11 @@ app.post('/api/rooms/:id/reservations', (req, res) => {
     }
   });
 });
-/* app.patch('/api/rooms/:id/reservations', (req, res) => {
+app.patch('/api/rooms/:id/reservations', (req, res) => {
   const listingId = req.url.match(/\/(\d+)\//)[1];
-  patchReservation(listingId, (error, response) => {
+  const reservation = req.body;
+  reservation.listingId = listingId;
+  patchReservation(reservation, (error, response) => {
     if (error) {
       res.status(500).send(error.stack);
     } else {
@@ -70,13 +72,15 @@ app.post('/api/rooms/:id/reservations', (req, res) => {
 });
 app.delete('/api/rooms/:id/reservations', (req, res) => {
   const listingId = req.url.match(/\/(\d+)\//)[1];
-  deleteReservation(listingId, (error, response) => {
+  const reservation = req.body;
+  reservation.listingId = listingId;
+  deleteReservation(reservation, (error, response) => {
     if (error) {
       res.status(500).send(error.stack);
     } else {
-      res.status(202).send(response.rows[0]);
+      res.status(202).send(response);
     }
   });
-}); */
+});
 
 app.listen(port, () => console.log(`Server is succesfully running and listening on port ${port}!`));
