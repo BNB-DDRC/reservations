@@ -12,7 +12,7 @@ const CalendarBox = styled.div`
   font-family: 'Montserrat', sans-serif;
   z-index: 1;
   position: absolute;
-  top: 242px;
+  top: 190px;
   left: 32px;
 `;
 
@@ -37,63 +37,75 @@ const ArrowBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-weight: 200;
+  color: rgb(143,143,143);
   width: 37px;
   height: 31px;
   margin-top: 18px;
   margin-bottom: 18px;
   border: 1px solid rgb(228, 231, 231);
   border-radius: 3px;
-  cursor: pointer;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Rows = styled.div`
   display: flex;
   justify-content: center;
-  margin: 0.07px;
-  `;
+`;
 
 const Days = styled.div`
-  width: 41px;
+  width: 40px;
   height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: rgb(117,117,117);
+  border: 0.5px solid rgba(228, 231, 231, 0);
   font-size: 11.67px;
-  margin: 0.07px;
 `;
-
+// margin was 0.07px for Rows and Days
 const Dates = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
   width: 40px;
-  height: 39px;
+  height: 40px;
+  justify-content: center;
   text-align: center;
-  border: 0.4px solid rgb(228, 231, 231);
+  border: 0.5px solid rgb(228, 231, 231);
   font-size: 14px;
   font-weight: bold;
+
+  &:hover {
+    cursor: pointer;
+  }
   
   ${(props) => (props.available === false)
     && css`
       text-decoration: line-through;
       color: rgb(216,216,216);
     `}
-  
-  ${(props) => (props.available === undefined)
-    && css`
-    border: none;
-    `}
 
   ${(props) => (props.available)
     && css`
-    :hover {
+    &:hover {
       background-color: rgb(228, 231, 231);
     };
-    cursor: pointer;
+    `}
+  ${(props) => (props.day === ' ') && css`
+      border: 0.5px solid rgba(228, 231, 231, 0);
+
+      &:hover {
+        cursor: auto;
+      }
     `}
 `;
-
+// ${(props) => (props.available === undefined)
+//   && css`
+//   border: none;
+//   `}
 
 class Calendar extends React.Component {
   constructor(props) {
@@ -131,7 +143,7 @@ class Calendar extends React.Component {
   }
 
   getDates() {
-    axios.get(`http://localhost:3002/api${window.location.pathname}dates`)
+    axios.get(`http://localhost:3002/api${window.location.pathname}reservations`)
       .then((response) => {
         this.setState({
           dates: response.data,
@@ -368,46 +380,46 @@ class Calendar extends React.Component {
     }
 
     return (
-      <CalendarBox>
-        <TopHeader>
-          <ArrowBox onClick={this.handleLeftClick}>
-            &lt;--
+      <CalendarBox className="check-in-out-calendar">
+        <TopHeader className="check-in-out-calendar">
+          <ArrowBox className="check-in-out-calendar" onClick={this.handleLeftClick}>
+          ⟵
           </ArrowBox>
-          <MonthAndYear>
+          <MonthAndYear className="check-in-out-calendar">
             {Months[currentMonth]}
             {' '}
             {currentYear}
           </MonthAndYear>
-          <ArrowBox onClick={this.handleRightClick}>
-            --&gt;
+          <ArrowBox className="check-in-out-calendar" onClick={this.handleRightClick}>
+          ⟶
           </ArrowBox>
         </TopHeader>
-        <Rows>
-          <Days>Su</Days>
-          <Days>Mo</Days>
-          <Days>Tu</Days>
-          <Days>We</Days>
-          <Days>Th</Days>
-          <Days>Fr</Days>
-          <Days>Sa</Days>
+        <Rows className="check-in-out-calendar">
+          <Days className="check-in-out-calendar">Su</Days>
+          <Days className="check-in-out-calendar">Mo</Days>
+          <Days className="check-in-out-calendar">Tu</Days>
+          <Days className="check-in-out-calendar">We</Days>
+          <Days className="check-in-out-calendar">Th</Days>
+          <Days className="check-in-out-calendar">Fr</Days>
+          <Days className="check-in-out-calendar">Sa</Days>
         </Rows>
-        <Rows>
-          {row1.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row1.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
-        <Rows>
-          {row2.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row2.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
-        <Rows>
-          {row3.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row3.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
-        <Rows>
-          {row4.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row4.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
-        <Rows>
-          {row5.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row5.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
-        <Rows>
-          {row6.map((day) => <Dates available={dates[`${Months[currentMonth].toLowerCase()}${day}`]}>{day}</Dates>)}
+        <Rows className="check-in-out-calendar">
+          {row6.map((day) => <Dates className="check-in-out-calendar" available={dates[`${Months[currentMonth].toLowerCase()}${day}`]} day={day}>{day}</Dates>)}
         </Rows>
       </CalendarBox>
     );

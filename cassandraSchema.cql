@@ -1,8 +1,8 @@
 DROP KEYSPACE IF EXISTS DDRCReservations;
 CREATE KEYSPACE DDRCReservations
-... with replication = {
+with replication = {
   'class': 'SimpleStrategy',
-  'replication_factor': 1,
+  'replication_factor': 1
 };
 
 USE DDRCReservations;
@@ -18,12 +18,12 @@ CREATE TABLE Listings (
 );
 
 CREATE TABLE Reservations (
-  confirmationNumber          int,
+  confirmationNumber          varchar,
   listingId                   int,
-  checkInDate                 date,
-  checkOutDate                date,
-  guestAdultCount             int,
-  guestChildCount             int,
-  guestInfantCount            int,
-  PRIMARY KEY ((listingId, checkInDate), confirmationNumber)
+  checkInDate                 varchar,
+  checkOutDate                varchar,
+  guestAdultCount             tinyint,
+  guestChildCount             tinyint,
+  guestInfantCount            tinyint,
+  PRIMARY KEY (listingId, confirmationNumber)
 );
